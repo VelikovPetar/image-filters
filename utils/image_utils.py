@@ -15,12 +15,12 @@ def change_saturation(source_image, change_rate):
     :param change_rate: the fixed applied to change the saturation
     :return: the image with the changed saturation
     """
-    hsv_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2HSV)
+    hsv_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2HSV).astype("float32")
     (h, s, v) = cv2.split(hsv_image)
     s = s + change_rate
-    # s = np.clip(s, 0, 255)
+    s = np.clip(s, 0, 255)
     hsv_image = cv2.merge([h, s, v])
-    return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+    return cv2.cvtColor(hsv_image.astype("uint8"), cv2.COLOR_HSV2BGR)
 
 
 def create_tone_curve(anchors):
