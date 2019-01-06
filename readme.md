@@ -1,0 +1,1 @@
+Implementation of popular image filters using OpenCV for a school project.
