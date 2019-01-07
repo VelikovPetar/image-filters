@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 from utils import image_utils
 
@@ -53,15 +52,8 @@ class ClarendonFilter:
         image = image_utils.change_saturation(source_img, self.SATURATION_CHANGE_RATE)
         # Apply the tone curve transformation on each layer (b, g, r)
         (b, g, r) = cv2.split(image)
-        b = self.map_pixel_values(b, image_utils.create_tone_curve(self.BLUE_TONE_CURVE_ANCHORS))
-        g = self.map_pixel_values(g, image_utils.create_tone_curve(self.GREEN_TONE_CURVE_ANCHORS))
-        r = self.map_pixel_values(r, image_utils.create_tone_curve(self.RED_TONE_CURVE_ANCHORS))
+        b = image_utils.map_pixel_values(b, image_utils.create_tone_curve(self.BLUE_TONE_CURVE_ANCHORS))
+        g = image_utils.map_pixel_values(g, image_utils.create_tone_curve(self.GREEN_TONE_CURVE_ANCHORS))
+        r = image_utils.map_pixel_values(r, image_utils.create_tone_curve(self.RED_TONE_CURVE_ANCHORS))
         return cv2.merge([b, g, r])
 
-    def map_pixel_values(self, image, pixel_values):
-        h = np.size(image, 0)
-        w = np.size(image, 1)
-        for i in range(0, h):
-            for j in range(0, w):
-                image[i][j] = pixel_values[image[i][j]]
-        return image

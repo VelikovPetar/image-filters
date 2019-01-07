@@ -61,3 +61,20 @@ def create_tone_curve(anchors):
     curve = interp1d(input_pixel_values, output_pixel_values, kind='cubic')
     output_pixel_values = curve(np.linspace(0, 255, num=256, endpoint=True))
     return output_pixel_values.astype(int)
+
+
+def map_pixel_values(image, pixel_values):
+    """
+    Transorms the input image to an output image, by replacing each pixel value with different one, given in the
+    'pixel_values' list.
+
+    :param image: the input image
+    :param pixel_values: the list containing the new pixel values
+    :return:
+    """
+    h = np.size(image, 0)
+    w = np.size(image, 1)
+    for i in range(0, h):
+        for j in range(0, w):
+            image[i][j] = pixel_values[image[i][j]]
+    return image
