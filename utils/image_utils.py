@@ -12,7 +12,7 @@ def change_saturation(source_image, change_rate):
     Applies a change in saturation of a given image. (+ or -)
 
     :param source_image: the source image
-    :param change_rate: the fixed applied to change the saturation
+    :param change_rate: the fixed amount applied to change the saturation
     :return: the image with the changed saturation
     """
     hsv_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2HSV).astype("float32")
@@ -22,6 +22,42 @@ def change_saturation(source_image, change_rate):
     hsv_image = cv2.merge([h, s, v])
     return cv2.cvtColor(hsv_image.astype("uint8"), cv2.COLOR_HSV2BGR)
 
+
+def change_brightness(source_image, brighten_rate):
+    """
+    Increases the brightness of the image.
+
+    :param source_image: the source image
+    :param brighten_rate: the fixed amount applied to change the brightness
+    :return: the image with changed brightness
+    """
+    hsv_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2HSV).astype("float32")
+    (h, s, v) = cv2.split(hsv_image)
+    v = v + brighten_rate
+    v = np.clip(v, 0, 255)
+    hsv_image = cv2.merge([h, s, v])
+    return cv2.cvtColor(hsv_image.astype("uint8"), cv2.COLOR_HSV2BGR)
+
+
+def change_contrast_and_brightness(image, alpha, beta):
+    """
+    Changes the image contrast and brightness:
+    The new image is calculated as: new_image = old_image * alpha + beta
+    alpha 1  beta 0      --> no change
+    0 < alpha < 1        --> lower contrast
+    alpha > 1            --> higher contrast
+    -127 < beta < +127   --> good range for brightness values
+
+    :param image: the source image
+    :param alpha: the parameter affecting the contrast
+    :param beta: the parameter affecting the brightness
+    :return: the modified image
+    """
+    image = np.float32(image)
+    image = image * alpha + beta
+    image = np.clip(image, 0, 255)
+    image = np.uint8(image)
+    return image
 
 def create_tone_curve(anchors):
     """
@@ -78,3 +114,37 @@ def map_pixel_values(image, pixel_values):
         for j in range(0, w):
             image[i][j] = pixel_values[image[i][j]]
     return image
+
+
+rgb_scale = 255
+cmyk_scale = 100
+
+
+def rgb_to_cmyk(r, g, b):
+    if (r == 0) and (g == 0) and (b == 0):
+        # black
+        return 0, 0, 0, cmyk_scale
+
+    # rgb [0,255] -> cmy [0,1]
+    c = 1 - r / float(rgb_scale)
+    m = 1 - g / float(rgb_scale)
+    y = 1 - b / float(rgb_scale)
+
+    # extract out k [0,1]
+    min_cmy = min(c, m, y)
+    c = (c - min_cmy)
+    m = (m - min_cmy)
+    y = (y - min_cmy)
+    k = min_cmy
+
+    # rescale to the range [0,cmyk_scale]
+    return c * cmyk_scale, m * cmyk_scale, y * cmyk_scale, k * cmyk_scale
+
+
+def cmyk_to_rgb(c, m, y, k):
+    """
+    """
+    r = rgb_scale * (1.0 - (c + k) / float(cmyk_scale))
+    g = rgb_scale * (1.0 - (m + k) / float(cmyk_scale))
+    b = rgb_scale * (1.0 - (y + k) / float(cmyk_scale))
+    return r, g, b
