@@ -6,6 +6,7 @@ from filters.gingham import GinghamFilter
 from filters.juno import JunoFilter
 from filters.moon import MoonFilter
 from filters.reyes import ReyesFilter
+from filters.slumber import SlumberFilter
 from utils import image_utils
 
 FILTERS = {
@@ -13,15 +14,16 @@ FILTERS = {
     "gingham": GinghamFilter(),
     "moon": MoonFilter(),
     "reyes": ReyesFilter(),
-    "juno": JunoFilter()
+    "juno": JunoFilter(),
+    "slumber": SlumberFilter()
 }
 
 if __name__ == '__main__':
     img_name = 'res/image-me.jpg'
     image = image_utils.read_image(img_name)
-    filter_name = "juno"
+    filter_name = "slumber"
     filtered_image = FILTERS[filter_name].apply(image)
-    cv2.imwrite('res/juno.jpg', filtered_image)
+    cv2.imwrite('res/slumber.jpg', filtered_image)
 
     # Convert images from BGR to RGB so 'pyplot' can display them correctly
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
