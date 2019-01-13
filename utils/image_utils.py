@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
 
 
 def read_image(image_name):
@@ -59,7 +60,8 @@ def change_contrast_and_brightness(image, alpha, beta):
     image = np.uint8(image)
     return image
 
-def create_tone_curve(anchors):
+
+def create_tone_curve(anchors, should_draw_curve=False):
     """
     Creates a tone curve based on given anchor points.
 
@@ -73,9 +75,18 @@ def create_tone_curve(anchors):
     resulting in a smooth curve.
 
     :param anchors: the anchor points
+    :param should_draw_curve: whther the method should draw the interpolated curve
     :return: a list of 256 number elements(between 0 and 255 included), representing the mapped pixel values, given by
     the fitted curve to the anchor points
     """
+    curve = generate_interpolation_function(anchors)
+    if should_draw_curve:
+        draw_curve(curve, anchors)
+    output_pixel_values = curve(np.linspace(0, 255, num=256, endpoint=True))
+    return output_pixel_values.astype(int)
+
+
+def generate_interpolation_function(anchors):
     input_pixel_values = []
     output_pixel_values = []
 
@@ -93,10 +104,23 @@ def create_tone_curve(anchors):
     if 255 not in input_pixel_values:
         input_pixel_values.append(255)
         output_pixel_values.append(255)
+    kind = 'cubic'
+    if len(input_pixel_values) <= 2:
+        kind = 'linear'
+    return interp1d(input_pixel_values, output_pixel_values, kind=kind)
 
-    curve = interp1d(input_pixel_values, output_pixel_values, kind='cubic')
-    output_pixel_values = curve(np.linspace(0, 255, num=256, endpoint=True))
-    return output_pixel_values.astype(int)
+
+def draw_curve(func, anchors):
+    x = []
+    y = []
+    for a in anchors:
+        x.append(a[0])
+        y.append(a[1])
+    line = generate_interpolation_function([(0, 0), (255, 255)])
+    xnew = np.linspace(0, 255, 256, endpoint=True)
+    plt.plot(x, y, 'o', xnew, func(xnew), '-', xnew, line(xnew), '--')
+    plt.legend(['Anchors', 'Tone curve', 'No tone curve'], loc='best')
+    plt.show()
 
 
 def map_pixel_values(image, pixel_values):
@@ -112,7 +136,7 @@ def map_pixel_values(image, pixel_values):
     w = np.size(image, 1)
     for i in range(0, h):
         for j in range(0, w):
-            image[i][j] = pixel_values[image[i][j]]
+            image[i][j] = np.clip(pixel_values[image[i][j]], 0, 255)
     return image
 
 
