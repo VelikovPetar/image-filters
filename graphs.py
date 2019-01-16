@@ -1,6 +1,7 @@
-from utils import image_utils
 import matplotlib.pyplot as plt
 import numpy as np
+
+from utils import image_utils
 
 if __name__ == '__main__':
     start = 0

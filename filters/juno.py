@@ -21,7 +21,8 @@ class JunoFilter:
         # the green -> red axis)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
         (l, a, b) = cv2.split(image)
-        a = a + 5
+        # a = a + 3
+        b = b - 5
         image = cv2.merge([l, a, b])
         image = cv2.cvtColor(image, cv2.COLOR_Lab2BGR)
         # Adjust the red layer to further enhance the red colors
@@ -30,6 +31,6 @@ class JunoFilter:
         image = cv2.merge([b, g, r])
         # Increase the contrast and reduce the brightness
         alpha = 1.4
-        beta = -35
+        beta = -20
         image = image_utils.change_contrast_and_brightness(image, alpha, beta)
         return image

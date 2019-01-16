@@ -1,8 +1,6 @@
 import cv2
 
-from filters.gingham import GinghamFilter
 from utils import image_utils
-import numpy as np
 
 
 class MoonFilter:

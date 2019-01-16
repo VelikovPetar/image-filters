@@ -1,10 +1,9 @@
 import cv2
-import numpy as np
+
 from utils import image_utils
 
 
 class ReyesFilter:
-
     B_TONE_CURVE = [
         (20, 6),
         (33, 4),
@@ -86,7 +85,6 @@ class ReyesFilter:
         (224, 214),
         (255, 236)
     ]
-
 
     def apply(self, image):
         image = image_utils.change_saturation(image, -50)
