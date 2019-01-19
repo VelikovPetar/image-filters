@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     # Convert images from BGR to RGB so 'pyplot' can display them correctly
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # filtered_image = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2RGB)
-    # plt.subplot(121), plt.imshow(image, 'gray'), plt.axis("off")
-    # plt.subplot(122), plt.imshow(filtered_image, 'gray'), plt.axis("off")
-    # plt.show()
+    filtered_image = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2RGB)
+    plt.subplot(121), plt.imshow(image, 'gray'), plt.axis("off")
+    plt.subplot(122), plt.imshow(filtered_image, 'gray'), plt.axis("off")
+    plt.show()
